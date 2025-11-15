@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-mortarboard-fill"></i> Student Skillset Manager
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/addStudent">Add Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/displayStudent">Display Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/updateStudent">Update Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/deleteStudent">Delete Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/skillStudent">Search by Skill</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/displayAll">Day Scholars</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Update Student Skills</h4>
+                    </div>
+                    <div class="card-body">
+                        <% if (error) { %>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill"></i> <%= error %>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <% } %>
+                        <% if (success) { %>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle-fill"></i> <%= success %>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <% } %>
+
+                        <% if (student) { %>
+                            <div class="alert alert-info">
+                                <strong>Current Student Info:</strong><br>
+                                <strong>Roll Number:</strong> <%= student.rollNumber %><br>
+                                <strong>Name:</strong> <%= student.name %><br>
+                                <strong>Current Skills:</strong> <%= student.skills.join(', ') || 'None' %>
+                            </div>
+                        <% } %>
+
+                        <form action="/updateStudent" method="POST" id="updateStudentForm">
+                            <div class="mb-3">
+                                <label for="rollNumber" class="form-label">Roll Number <span class="text-danger">*</span></label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="rollNumber" 
+                                       name="rollNumber" 
+                                       required
+                                       min="1"
+                                       pattern="[0-9]+"
+                                       value="<%= student ? student.rollNumber : '' %>"
+                                       placeholder="Enter roll number">
+                                <div class="invalid-feedback">Please enter a valid roll number.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Select New Skills <span class="text-danger">*</span></label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="skills" value="dance" id="skillDance" 
+                                                   <%= student && student.skills.includes('dance') ? 'checked' : '' %>>
+                                            <label class="form-check-label" for="skillDance">Dance</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="skills" value="drawing" id="skillDrawing"
+                                                   <%= student && student.skills.includes('drawing') ? 'checked' : '' %>>
+                                            <label class="form-check-label" for="skillDrawing">Drawing</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="skills" value="painting" id="skillPainting"
+                                                   <%= student && student.skills.includes('painting') ? 'checked' : '' %>>
+                                            <label class="form-check-label" for="skillPainting">Painting</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="skills" value="singing" id="skillSinging"
+                                                   <%= student && student.skills.includes('singing') ? 'checked' : '' %>>
+                                            <label class="form-check-label" for="skillSinging">Singing</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="skills" value="storyWriting" id="skillStoryWriting"
+                                                   <%= student && student.skills.includes('storyWriting') ? 'checked' : '' %>>
+                                            <label class="form-check-label" for="skillStoryWriting">Story Writing</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="skills" value="chess" id="skillChess"
+                                                   <%= student && student.skills.includes('chess') ? 'checked' : '' %>>
+                                            <label class="form-check-label" for="skillChess">Chess</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="skills" value="cricket" id="skillCricket"
+                                                   <%= student && student.skills.includes('cricket') ? 'checked' : '' %>>
+                                            <label class="form-check-label" for="skillCricket">Cricket</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="skills" value="soccer" id="skillSoccer"
+                                                   <%= student && student.skills.includes('soccer') ? 'checked' : '' %>>
+                                            <label class="form-check-label" for="skillSoccer">Soccer</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="skills" value="orchestra" id="skillOrchestra"
+                                                   <%= student && student.skills.includes('orchestra') ? 'checked' : '' %>>
+                                            <label class="form-check-label" for="skillOrchestra">Orchestra</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-danger mt-2" id="skillsError" style="display: none;">
+                                    Please select at least one skill.
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="/" class="btn btn-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-warning">Update Skills</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/scripts/validation.js"></script>
+</body>
+</html>
+

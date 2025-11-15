@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-mortarboard-fill"></i> Student Skillset Manager
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/addStudent">Add Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/displayStudent">Display Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/updateStudent">Update Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/deleteStudent">Delete Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/skillStudent">Search by Skill</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/displayAll">Day Scholars</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0"><i class="bi bi-funnel-fill"></i> Search Students by Skill (Pattern Search)</h4>
+                    </div>
+                    <div class="card-body">
+                        <% if (error) { %>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill"></i> <%= error %>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <% } %>
+
+                        <form action="/skillStudent" method="POST" id="skillStudentForm">
+                            <div class="mb-3">
+                                <label for="skillPattern" class="form-label">Skill Pattern <span class="text-danger">*</span></label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="skillPattern" 
+                                       name="skillPattern" 
+                                       required
+                                       placeholder="Enter skill pattern (e.g., 'sing' will match 'singing')">
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-info-circle"></i> Uses regex pattern matching. Example: "sing" matches "singing", "draw" matches "drawing"
+                                </small>
+                                <div class="invalid-feedback">Please enter a skill pattern to search.</div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-info">Search Students</button>
+                            </div>
+                        </form>
+
+                        <% if (searchTerm) { %>
+                            <hr class="my-4">
+                            <h5 class="mb-3">
+                                Search Results for: "<strong><%= searchTerm %></strong>"
+                                <span class="badge bg-info ms-2"><%= students ? students.length : 0 %> student(s) found</span>
+                            </h5>
+                            
+                            <% if (students && students.length > 0) { %>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Roll Number</th>
+                                                <th>Name</th>
+                                                <th>Guardian Phone</th>
+                                                <th>Skills</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% students.forEach((student) => { %>
+                                                <tr>
+                                                    <td><strong><%= student.rollNumber %></strong></td>
+                                                    <td><%= student.name %></td>
+                                                    <td>
+                                                        <% if (student.guardianPhone) { %>
+                                                            <i class="bi bi-telephone-fill"></i> <%= student.guardianPhone %>
+                                                        <% } else { %>
+                                                            <span class="text-muted">Day Scholar</span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <% if (student.skills && student.skills.length > 0) { %>
+                                                            <% student.skills.forEach((skill) => { %>
+                                                                <% 
+                                                                    // Highlight matching skills
+                                                                    const regex = new RegExp(searchTerm, 'gi');
+                                                                    const highlighted = skill.replace(regex, (match) => `<mark>${match}</mark>`);
+                                                                %>
+                                                                <span class="badge bg-primary me-1"><%- highlighted %></span>
+                                                            <% }); %>
+                                                        <% } else { %>
+                                                            <span class="text-muted">No skills</span>
+                                                        <% } %>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-exclamation-triangle-fill"></i> No students found with skills matching the pattern "<%= searchTerm %>"
+                                </div>
+                            <% } %>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/scripts/validation.js"></script>
+</body>
+</html>
+
